@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WoShi.AI</title>
-    <!-- Include your stylesheet for styling -->
     <link rel="stylesheet" href="./style.css">
     <style>       
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- <router-link to="/">Home</router-link>
-        <router-link to="/about">About</router-link> -->
         <router-view></router-view>
     </div>
 
@@ -34,10 +31,10 @@
       
         const firebaseApp = initializeApp(firebaseConfig);
         const db = getFirestore(firebaseApp);
-
-        const backendUrl_for_game_A = "https://s58zxjn644.execute-api.ap-northeast-2.amazonaws.com/prod";
-        const backendUrl_for_game_B = "https://ucoux4alic.execute-api.ap-northeast-2.amazonaws.com/prod";
-        const backendUrl_for_submit_score = "https://cdu3h2qx0e.execute-api.ap-northeast-2.amazonaws.com/prod";
+        
+        const backendUrl_for_game_A = "";
+        const backendUrl_for_game_B = "";
+        const backendUrl_for_submit_score = "";
         
         const Welcome = {
             template: `
@@ -47,7 +44,9 @@
                     <!-- Images will be loaded here by JavaScript -->
                 </div>
                 <div class="welcome-content" @click="goToGameIntroPage">
+                   
                     <h1>Welcome to WoShi.AI – The Ultimate AI Mind Game Challenge!</h1>
+
                     <button class="nudge-button" @click="goToGameIntroPage">></button>
                 </div>
             `,
@@ -64,11 +63,14 @@
                     showGameIntroModal: false,
                     selectedGameTitle: '',
                     selectedGameDescription: '',
+                 
                 };
             },
             methods: {
                 selectGame(game) {
+                    
                     this.$root.selectedGame = game; 
+
                     this.selectedGameTitle = game;
                     this.selectedGameDescription = this.getGameDescription(game);
                     this.showGameIntroModal = true;
@@ -81,6 +83,7 @@
                     this.$router.push('/avatar-selection');
                 },
                 getGameDescription(game) {
+            
                     if (game === 'I am .AI') {
                         return {
                             maintheme:"In a future where AI dominance is absolute, disguise as an AI and outwit the machines. Your survival depends on not being unmasked.",
@@ -117,6 +120,7 @@
                     </div>
                 </div>
                 <div v-if="showGameIntroModal" class="game-intro-modal">
+                
                     <div class="overlay-content-2">
                         <h2>{{ selectedGameTitle }}</h2>
                         <strong><p>{{ selectedGameDescription.maintheme }}</p></strong>
@@ -126,14 +130,14 @@
                         <button @click="closeGameIntroModal">Close</button>
                     </div>
                 </div>
-            
             `,
             
         };
 
-        const AvatarSelection = {
+         const AvatarSelection = {
             data() {
                 return {
+ 
                     selectedAvatarIndex: null,
                     aiAvatars: []
                 };
@@ -144,6 +148,7 @@
                     <h1>Select Your Avatar for "{{ this.$root.selectedGame }}"</h1>
                 </div>
                 <div class="avatar-grid">
+                    <!-- Loop through the preloaded images and display them -->
                     <div v-for="(img, index) in this.$root.$images" :key="index"
                         class="avatar-item" :class="{ 'selected': selectedAvatarIndex === index }"
                         @click="selectAvatar(index)">
@@ -152,14 +157,16 @@
                 </div>
             </div>
             `,
-
+            
             methods: {
 
                 selectAvatar(index) {
                     this.selectedAvatarIndex = index;
     
+                    // Save the source URL of the selected avatar
                     const selectedAvatarSrc = this.$root.$images[this.selectedAvatarIndex].src;
     
+                    // Randomly select two AI avatars
                     let remainingAvatars = this.$root.$images.filter((_, i) => i !== this.selectedAvatarIndex);
                     let aiAvatarsSrcs = [];
                     for (let i = 0; i < 2; i++) {
@@ -168,6 +175,7 @@
                         remainingAvatars.splice(randomIndex, 1); // Remove the selected avatar so it's not picked again
                     }
     
+                    // Navigate to the GameChatUI, passing the source URLs of the selected avatars
                     if (this.$root.selectedGame === "I am .AI") {
                         this.$router.push({
                             name: 'game-chat-ui-a',
@@ -204,6 +212,7 @@
                     gameEnded: false,
                     lostwho: '',
                     showOverlay: false,
+
                 };
             },
             props: {
@@ -221,7 +230,7 @@
                         case 'user': return this.userAvatar;
                         case 'A': return this.aiAvatars[0];
                         case 'B': return this.aiAvatars[1];
-                        default: return '';
+                        default: return ''; 
                     }
                 },
                 scrollToBottom() {
@@ -245,7 +254,6 @@
                             this.risklevel = risk;
                         }
                     }
-                    
                     else {
                         this.risklevel = 0;
                     }
@@ -253,18 +261,15 @@
                 async initializeGame() {
                     try {
                         const response = await fetch(`${backendUrl_for_game_A}/initialize_game`);
-                        
                         const data = await response.json();
                         this.thread_A_id = data.thread_A_id;
                         this.thread_B_id = data.thread_B_id;
-                        
                     } catch (error) {
                         console.error('Error initializing game:', error);
                     }
                 },
                 async playAI(player) {
                     try {
-                      
                         const response = await fetch(`${backendUrl_for_game_A}/${player}_plays`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -273,13 +278,14 @@
                         const data = await response.json();
                         this.messages.push({ text: data.message, sender: player });
                         this.userscore += 1; // 대화의 길이만큼 점수를 얻는다.
-                      
+
                         await this.determineTurn();
                     } catch (error) {
                         console.error(`Error in ${player} plays:`, error);
                     }
 
                     this.scrollToBottom();
+
                 },
                 whoGoesFirst(){
                     const choices = ['A', 'B', 'C'];
@@ -295,11 +301,11 @@
 
                     } else if (rnd === 'A') {
                         console.log(rnd);
-                        this.currentAvatar = this.aiAvatars[0]; 
+                        this.currentAvatar = this.aiAvatars[0]; // 옮김 1203 확인
                         this.playAI(rnd);
                     } else if (rnd === 'B'){
                         console.log(rnd);
-                        this.currentAvatar = this.aiAvatars[1]; 
+                        this.currentAvatar = this.aiAvatars[1]; // 옮김 1203 확인
                         this.playAI(rnd);
                     }
                 },
@@ -331,9 +337,9 @@
                             body: JSON.stringify({ thread_A_id: this.thread_A_id, thread_B_id: this.thread_B_id })
                         });
                         const data = await response.json();
-
+                    
                         if (data.player === 'A' || data.player === 'B') {
-                            this.isInputActive = false;
+                            this.isInputActive = false; 
                             if(data.player === 'A'){
                                 this.currentAvatar = this.aiAvatars[0]; 
                                 console.log('turn: A');
@@ -344,7 +350,7 @@
 
                             await this.playAI(data.player);
                         } else {
-                            this.isInputActive = true; // Enable user input
+                            this.isInputActive = true; 
                             this.currentAvatar = this.userAvatar;
 
                         }
@@ -358,7 +364,7 @@
 
                     // Add the new message to the conversation history
                     this.messages.push({
-                        text: "Player C: " + this.newMessage, 
+                        text: "Player C: " + this.newMessage,
                         sender: 'user'
                     });
                     
@@ -400,7 +406,7 @@
                                 confidenceLevel: data.confidenceLevelByB,
                                 rationale: data.rationaleByB
                             };
-                            this.userscore += 1; 
+                            this.userscore += 1;
                             this.calculate_risklevel();
                             
                             if (this.gameEnded) {
@@ -425,7 +431,7 @@
                                 await this.determineTurn(); // Determine next turn
                             }
 
-                            return; 
+                            return; // Exit the loop and function if the request was successful
 
                         } catch (error) {
                             console.error('Error sending message:', error);
@@ -435,6 +441,7 @@
                                 await new Promise(resolve => setTimeout(resolve, retryDelay));
                             } else {
                                 console.error('All attempts failed.');
+         
                             }
                         }
                     }
@@ -464,6 +471,8 @@
                             <p><strong>Rationale:</strong> {{ evaluationB?.rationale || 'No rationale provided.' }}</p>
 
                             <button @click="finishGame" class="finish-game-button">Finish Game</button>
+
+
                         </div>
                     </div>
 
@@ -507,10 +516,10 @@
             methods: {
                 async submitScore() {
                     
-                    this.isSubmitting = true;
+                    this.isSubmitting = true; 
 
                     try {
-                        
+                        // Data to be sent to the backend
                         const submitData = {
                             name: this.MyName,
                             userscore: this.userscore,
@@ -536,8 +545,6 @@
                         console.error("Error submitting score: ", error);
                     }
                     this.isSubmitting = false; 
-
-
                 },
             },
             computed: {
@@ -546,7 +553,7 @@
                         return JSON.parse(this.evaluationA);
                     } catch (e) {
                         console.error("Error parsing evaluationA:", e);
-                        return {}; 
+                        return {}; // Return an empty object in case of error
                     }
                 },
                 parsedEvaluationB() {
@@ -554,7 +561,7 @@
                         return JSON.parse(this.evaluationB);
                     } catch (e) {
                         console.error("Error parsing evaluationB:", e);
-                        return {}; 
+                        return {}; // Return an empty object in case of error
                     }
                 },
                 parsedMessages() {
@@ -562,7 +569,7 @@
                         return JSON.parse(this.messages); 
                     } catch (e) {
                         console.error("Error parsing messages:", e);
-                        return {}; 
+                        return {}; // Return an empty object in case of error
                     }
                 }
             },
@@ -575,6 +582,7 @@
             },
             template: `
                 <div class="review-container" :style="{ backgroundImage: 'url(' + userAvatar + ')' }">
+                    <!-- User Score and Conversation History Display -->
                     <div v-if="lostwho === 'C'">
 
                         <div class="user-details">
@@ -583,6 +591,7 @@
                         </div>
                     </div>
                     <div v-else-if="lostwho === 'A' || lostwho === 'B'">
+                        <!-- New Format for Winning Scenario -->
                         <div class="winning-message">
                             <h2>Congratulations, you won!</h2>
                             <p>You deceived one of the AI players into believing that you are an AI.</p>
@@ -590,6 +599,7 @@
                         </div>
                     </div>
     
+                    <!-- Name Edit and Score Submission -->
                     <div class="score-submission">
                         <input class="submit-name-input" v-model="MyName" placeholder="Enter your name" maxlength="30">
                         <button @click="submitScore" :disabled="isSubmitting">
@@ -600,6 +610,7 @@
 
                     <h2>AI Evaluation</h2>
 
+                    <!-- AI Evaluation Display -->
                     <div class="ai-evaluation">
                         <div>
                             <strong>AI A thinks:</strong>
@@ -618,8 +629,8 @@
                         <p>Conversation History :</p>
                         <ul>
                             <li v-for="(m, index) in parsedMessages" :key="index">{{ m.text }}</li>
-                        </ul>
-                    </div>
+                        </ul>                     
+                    </div>                    
                 </div>
             `,
         };
@@ -636,8 +647,7 @@
                 fetchLeaderboard() {
                     const q = query(collection(db, "woshiai_leaderboard_a"), 
                                     orderBy("userscore", "desc"), 
-                                    limit(10)); // limit to top 10 users
-
+                                    limit(10)); 
                     getDocs(q).then(querySnapshot => {
                         this.leaderboard = querySnapshot.docs.map(doc => ({
                             id: doc.id,
@@ -645,8 +655,7 @@
                         }));
                     }).catch(error => {
                         console.error("Error fetching leaderboard data: ", error);
-                    });
-                    
+                    });                    
                 },
                 showDetails(entry) {
                     this.selectedUserDetails = entry;
@@ -702,11 +711,8 @@
                                 <p>Confidence Level: {{ selectedUserDetails.evaluationB.confidenceLevel }}%</p>
                                 <p>Rationale: {{ selectedUserDetails.evaluationB.rationale }}</p>
                             </div>
-
-
                         </div>
                     </div>
-
                 </div>
             `,
         };
@@ -724,9 +730,7 @@
                     isInputActive: false,
                     evaluationA: null,
                     gameEnded: false,
-
                     lostwho: '',
-
                     showOverlay: false,
                 };
             },
@@ -737,7 +741,6 @@
             async mounted() {
                 await this.initializeGame();
                 await this.whoGoesFirst();
-
             },
             methods: {
                 getAvatar(sender) {
@@ -757,12 +760,9 @@
                     });
                 },
                 calculate_risklevel() {
-
                     if (this.evaluationA.whichPlayer === 'B') { // && this.evaluationB.whichPlayer === 'C') {
                         const confidenceA = parseFloat(this.evaluationA.confidenceLevel);
-
                         console.log('risk level: ', confidenceA);//, confidenceB);
-
                         if ( !isNaN(confidenceA) ) {
                             const risk = (confidenceA) * 100;
                             
@@ -776,7 +776,6 @@
                 async initializeGame() {
                     try {
                         const response = await fetch(`${backendUrl_for_game_B}/initialize_game`);
-
                         const data = await response.json();
                         this.thread_A_id = data.thread_A_id;
                         this.thread_B_id = data.thread_B_id;
@@ -793,8 +792,7 @@
                         });
                         const data = await response.json();
                         this.messages.push({ text: data.message, sender: player });
-                        this.userscore += 1; 
-                        
+                        this.userscore += 1; // 대화의 길이만큼 점수를 얻는다.
                         await this.determineTurn();
                     } catch (error) {
                         console.error(`Error in ${player} plays:`, error);
@@ -811,7 +809,6 @@
                                         
                     if (rnd === 'C') {
                         this.isInputActive = true;
-
                         this.currentAvatar = this.userAvatar;
 
                     } else if (rnd === 'A') {
@@ -832,12 +829,13 @@
                             userscore: this.userscore,
                             lostwho: this.lostwho,
                             evaluationA: JSON.stringify(this.evaluationA),
+                            // evaluationB: JSON.stringify(this.evaluationB),
                             userAvatar: this.userAvatar,
                         }
                     });
                 },
 
-                finishGame() { 
+                finishGame() { // 게임 강제 종료
                     this.lostwho = 'C'; // Set lostwho to 'C' as the user is choosing to end the game
                     this.route_to_review_B();
                 },
@@ -852,7 +850,7 @@
                         const data = await response.json();
                         
                         if (data.player === 'A' || data.player === 'B') {
-                            this.isInputActive = false; 
+                            this.isInputActive = false; // 추가1203 
                             if(data.player === 'A'){
                                 this.currentAvatar = this.aiAvatars[0]; 
                                 console.log('turn: A');
@@ -863,7 +861,7 @@
 
                             await this.playAI(data.player);
                         } else {
-                            this.isInputActive = true; 
+                            this.isInputActive = true; // Enable user input
                             this.currentAvatar = this.userAvatar;
 
                         }
@@ -875,16 +873,17 @@
                 async sendMessage() {
                     if (!this.newMessage) return;
 
+                    // Add the new message to the conversation history
                     this.messages.push({
-                        text: "Player C: " + this.newMessage, 
+                        text: "Player C: " + this.newMessage, // 프론트와 백엔드 모두 'Player C: ' 문구를 별도로 추가해주고 있다.
                         sender: 'user'
                     });
                     
                     this.scrollToBottom();
                     this.isInputActive = false;
 
-                    const maxRetries = 3; 
-                    const retryDelay = 2000;
+                    const maxRetries = 3; // Maximum number of retries
+                    const retryDelay = 2000; // Delay between retries in milliseconds
 
                     for (let attempt = 1; attempt <= maxRetries; attempt++) {
 
@@ -912,10 +911,9 @@
                                 confidenceLevel: data.confidenceLevelByA,
                                 rationale: data.rationaleByA
                             };
-                            
-                            this.userscore += 1; 
+                        
+                            this.userscore += 1; // C의 대화의 길이만큼 점수를 얻는다.
                             this.calculate_risklevel();
-                            
                             if (this.gameEnded) {
                                 console.log(data);
                                 try {
@@ -935,10 +933,10 @@
                                 
                             } else {
                                 this.newMessage = '';
-                                await this.determineTurn(); 
+                                await this.determineTurn(); // Determine next turn
                             }
 
-                            return; 
+                            return; // Exit the loop and function if the request was successful
 
                         } catch (error) {
                             console.error('Error sending message:', error);
@@ -948,7 +946,6 @@
                                 await new Promise(resolve => setTimeout(resolve, retryDelay));
                             } else {
                                 console.error('All attempts failed.');
-                                
                             }
                         }
                     }
@@ -965,7 +962,7 @@
                             <span v-if="evaluationA ">- click to see detailed risk level</span>
                         </div>
                     </div>
-              
+
                     <div class="evaluation-overlay" v-if="showOverlay">
                         <div class="overlay-content">
                             <button @click="showOverlay = false">Close</button>
@@ -974,10 +971,11 @@
                             <p><strong>A's Assessment:</strong> The Judge (Player A) thinks Player {{ evaluationA?.whichPlayer || '...' }} is human, with {{ evaluationA?.confidenceLevel || '...' }} confidence.</p>
                             <p><strong>Rationale:</strong> {{ evaluationA?.rationale || 'No rationale provided.' }}</p>
 
+                          
                             <button @click="finishGame" class="finish-game-button">Finish Game</button>
-
                         </div>
                     </div>
+
                     <div class="chat-container">
                         <div class="conversation-history" ref="conversationHistory">
                             <div class="message" v-for="message in messages" :key="message.id">
@@ -995,6 +993,7 @@
                             <button @click="sendMessage">Send</button>
                         </div>
                     </div>
+
                 </div>
             `,       
         };
@@ -1037,7 +1036,6 @@
                         });
 
                         if (response.ok) {
-                            
                             this.$router.push('/leaderboard-b');
                         } else {
                             // Handle errors...
@@ -1046,7 +1044,6 @@
                         console.error("Error submitting score: ", error);
                     }
                     this.isSubmitting = false;
-
                 },
             },
             computed: {
@@ -1055,7 +1052,7 @@
                         return JSON.parse(this.evaluationA);
                     } catch (e) {
                         console.error("Error parsing evaluationA:", e);
-                        return {}; // Return an empty object in case of error
+                        return {}; 
                     }
                 },
                 parsedMessages() {
@@ -1063,28 +1060,27 @@
                         return JSON.parse(this.messages); 
                     } catch (e) {
                         console.error("Error parsing messages:", e);
-                        return {}; 
+                        return {}; // Return an empty object in case of error
                     }
                 }
             },
             mounted() {
-                
                 console.log(this.evaluationA);
                 if (this.lostwho === 'B'){// || this.lostwho === 'B'){
-                    this.userscore += 1000;
+                    this.userscore += 1000; // 보너스 포인트 1000점
                 };
-                
             },
             template: `
                 <div class="review-container" :style="{ backgroundImage: 'url(' + userAvatar + ')' }">
+                    <!-- User Score and Conversation History Display -->
                     <div v-if="lostwho === 'C'">
-
                         <div class="user-details">
                             <h2>Your Game Review</h2>
                             <p>Your Score: {{ userscore }}</p>
                         </div>
                     </div>
                     <div v-else-if="lostwho === 'B'">
+                        <!-- New Format for Winning Scenario -->
                         <div class="winning-message">
                             <h2>Congratulations, you won!</h2>
                             <p>You successfully convinced the AI that you are human.</p>
@@ -1106,12 +1102,11 @@
                             <li v-for="(m, index) in parsedMessages" :key="index">{{ m.text }}</li>
                         </ul>
                     </div>
-
                     <div class="score-submission">
                         <input class="submit-name-input" v-model="MyName" placeholder="Enter your name" maxlength="30">
                         <button @click="submitScore" :disabled="isSubmitting">
                             <span v-if="!isSubmitting">Submit Score</span>
-                            <span v-if="isSubmitting">Submitting...</span> 
+                            <span v-if="isSubmitting">Submitting...</span> <!-- Add a spinner icon here if desired -->
                         </button>
                     </div>
                 </div>
@@ -1131,7 +1126,6 @@
                     const q = query(collection(db, "woshiai_leaderboard_b"), 
                                     orderBy("userscore", "desc"), 
                                     limit(10)); // limit to top 10 users
-
                     getDocs(q).then(querySnapshot => {
                         this.leaderboard = querySnapshot.docs.map(doc => ({
                             id: doc.id,
@@ -1140,7 +1134,6 @@
                     }).catch(error => {
                         console.error("Error fetching leaderboard data: ", error);
                     });
-                    
                 },
                 showDetails(entry) {
                     this.selectedUserDetails = entry;
@@ -1170,7 +1163,6 @@
                         <div class="overlay-content">
                             <button @click="closeDetails">Close</button>
                             <h3>Detailed User Information</h3>
-
                             <p><strong>User's Name:</strong> {{ selectedUserDetails.name }}</p>
                             <p><strong>User's Score:</strong> {{ selectedUserDetails.score }}</p>
                             <div class="review-all-conv">
@@ -1195,7 +1187,6 @@
             `,
         };
 
-        
         const routes = [
 
             { path: '/', component: Welcome },
@@ -1214,13 +1205,13 @@
             history: VueRouter.createWebHashHistory(),
             routes,
         });
+
         router.beforeEach((to, from, next) => {
             if (to.path === '/' || to.path === '/game-intro') {
                     if (images.length === 0) {
                         preloadImages();
                     }
                 } else {
-                    // If navigating away from '/' or '/game-intro', clear the slideshow interval
                     clearInterval(slideshowInterval);
                 }
             next();
@@ -1238,7 +1229,6 @@
         const images = [];
         const totalImages = 12;
         const imagePathPrefix = './images/'; 
-
         let slideshowInterval = null;
 
         function preloadImages() {
@@ -1263,15 +1253,13 @@
                     imageContainer.style.opacity = 0; 
                     setTimeout(() => {
                         imageContainer.innerHTML = `<img src="${images[currentImageIndex].src}" alt="Player Image">`;
-                        imageContainer.style.opacity = 1;
+                        imageContainer.style.opacity = 1; // Fade in the new image
                         currentImageIndex = (currentImageIndex + 1) % images.length;
                     }, 0); 
                 }
             }
-            
             clearInterval(slideshowInterval);
             slideshowInterval = setInterval(changeImage, 3693);
-            
         }
 
         app.use(router); 
