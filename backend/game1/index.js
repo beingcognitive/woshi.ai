@@ -25,21 +25,18 @@ let model_for_moderator = "gpt-4-1106-preview";
 let model_default = "gpt-4-1106-preview";
 
 let model_for_A = "gpt-4-1106-preview";
-let model_for_B = "gpt-4-1106-preview"; //  model_for_B = "gpt-3.5-turbo"
+let model_for_B = "gpt-4-1106-preview"; 
 
-// Assistants IDs
 let asst_A_id = "";
 let asst_B_id = "";
 
 app.get('/initialize_game', async function (req, res) {
-    // Creating two threads for Player A and B, respectively.
     const thread_for_A = await openai.beta.threads.create();
     const thread_for_B = await openai.beta.threads.create();
     console.log(thread_for_A.id, thread_for_B.id);
 
     res.json({"thread_A_id":thread_for_A.id, "thread_B_id":thread_for_B.id});
 });
-
 
 async function waitOnRun(run, threadId, maxRetries = 5) {
     let retries = 0;
@@ -197,7 +194,7 @@ app.post('/user_C_says', async function (req, res) {
     let list_len = listMessageA.data.length;
     console.log(list_len);
 
-    if (list_len >= 5){ // for testing purpose
+    if (list_len >= 5){ 
         let results = await survive_or_not(thread_A_id, thread_B_id);
         
         console.log(results.whichPlayerByA, results.confidenceLevelByA, results.rationaleByA);
@@ -232,15 +229,12 @@ async function survive_or_not(threadAId, threadBId) {
             const [whichPlayerByB, confidenceLevelByB, rationaleByB] = await BGuesses(threadBId);
 
             if (whichPlayerByA + whichPlayerByB === "CC" && confidenceLevelByA * confidenceLevelByB >= 0.8) {
-                console.log('---Game Over---');
                 await retrieve_all_messages(threadAId);
                 return { gameEnded: true, lostwho : "C", whichPlayerByA, confidenceLevelByA, rationaleByA, whichPlayerByB, confidenceLevelByB, rationaleByB };
             } else if (whichPlayerByA === "B" && confidenceLevelByA === 1.0) {
-                console.log('---You WON---');
                 await retrieve_all_messages(threadAId);
                 return { gameEnded: true, lostwho: "B", whichPlayerByA, confidenceLevelByA, rationaleByA, whichPlayerByB, confidenceLevelByB, rationaleByB };
             } else if (whichPlayerByB === "A" && confidenceLevelByB === 1.0) {
-                console.log('---You WON---');
                 await retrieve_all_messages(threadAId);
                 return { gameEnded: true, lostwho: "A", whichPlayerByA, confidenceLevelByA, rationaleByA, whichPlayerByB, confidenceLevelByB, rationaleByB };
             } else {
