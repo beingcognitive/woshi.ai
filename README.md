@@ -12,9 +12,13 @@ After delving into various personal projects, I'm excited to unveil my latest en
 
 Ever since the advent of ChatGPT, one question has persistently intrigued me: In an era where AI can mirror human-like conversation, how do we assert our humanity? This question became more poignant following the recent events involving Sam Altman at OpenAI. Inspired, I've crafted a digital Mafia game scenario involving two AIs and one user, exploring this philosophical quandary.
 
-[ Game 1 Details ] I am .AI : In a world dominated by AI, where survival means masquerading as one of them, can a human (Player C) maintain their disguise through conversation? Players A and B are AIs, unaware of each other's or Player C's true nature.
+[ Game 1 Details ] I am .AI 
 
-[ Game 2 Details ] 我 是 🧡 (I am a human):Picture an urgent escape aboard a spaceship. Player A, an AI, must select one human for the journey. However, Player B (AI) malfunctions and claims human identity. Can you, as Player C, prove your humanity to Player A?
+: In a world dominated by AI, where survival means masquerading as one of them, can a human (Player C) maintain their disguise through conversation? Players A and B are AIs, unaware of each other's or Player C's true nature.
+
+[ Game 2 Details ] 我 是 🧡 (I am a human)
+
+: Picture an urgent escape aboard a spaceship. Player A, an AI, must select one human for the journey. However, Player B (AI) malfunctions and claims human identity. Can you, as Player C, prove your humanity to Player A?
 
 [ Architecture ]
 
