@@ -19,7 +19,9 @@ Ever since the advent of ChatGPT, one question has persistently intrigued me: In
 [ Architecture ]
 
 . Frontend: CloudFlare, Vue.js
+
 . Backend: AWS Lambda, Node.js
+
 . LLM: GPT-4, Assistant API (enhancing long conversations), with a multi-agent setup keeping the human player's identity a mystery.
 
 . Images: Created with MidJourney
